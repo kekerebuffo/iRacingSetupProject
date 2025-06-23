@@ -43,14 +43,16 @@ def obtener_setup_base(coche, circuito, tipo_conduccion):
     return response.data[0] if response.data else None
 
 def obtener_ajustes_condiciones(setup_base_id, temperatura, vueltas):
-    response = supabase.table('ajuste_condiciones')\
-        .select('*')\
-        .eq('setup_base_id', setup_base_id)\
-        .filter('temp_min', '<=', temperatura)\
-        .filter('temp_max', '>=', temperatura)\
-        .filter('vueltas_min', '<=', vueltas)\
-        .filter('vueltas_max', '>=', vueltas)\
+    response = (
+        supabase.table('ajuste_condiciones')
+        .select('*')
+        .eq('setup_base_id', setup_base_id)
+        .lte('temp_min', temperatura)   # temp_min <= temperatura
+        .gte('temp_max', temperatura)   # temp_max >= temperatura
+        .lte('vueltas_min', vueltas)    # vueltas_min <= vueltas
+        .gte('vueltas_max', vueltas)    # vueltas_max >= vueltas
         .execute()
+    )
     return response.data or []
 
 def aplicar_ajustes(setup_json, ajustes_list):
