@@ -78,6 +78,15 @@ def obtener_setup_final(req: SetupRequest):
     setup_final = aplicar_ajustes(base['setup_json'], ajustes)
     return {"setup": setup_final}
 
+@app.get("/opciones")
+def obtener_opciones():
+    response = supabase.table('setup_base').select('coche,circuito').execute()
+
+    coches = sorted(list({row['coche'] for row in response.data}))
+    circuitos = sorted(list({row['circuito'] for row in response.data}))
+
+    return {"coches": coches, "circuitos": circuitos}
+
 @app.get("/")
 def index():
     return {"message": "API funcionando correctamente 🎉"}
